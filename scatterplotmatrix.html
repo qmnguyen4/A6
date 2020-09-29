@@ -70,11 +70,11 @@ var yAxis = d3.axisLeft()
 
 var color = d3.scaleOrdinal(d3.schemeCategory10);
 
-d3.csv("airline.csv", function(error, data) {
+d3.csv("flowers.csv", function(error, data) {
   if (error) throw error;
 
   var domainByTrait = {},
-      traits = d3.keys(data[0]).filter(function(d) { return d !== "Airport"; }),
+      traits = d3.keys(data[0]).filter(function(d) { return d !== "species"; }),
       n = traits.length;
 
   traits.forEach(function(trait) {
@@ -145,11 +145,12 @@ d3.csv("airline.csv", function(error, data) {
         .attr("cx", function(d) { return x(d[p.x]); })
         .attr("cy", function(d) { return y(d[p.y]); })
         .attr("r", 4)
-        .style("fill", function(d) { return color(d.Airport); });
+        .style("fill", function(d) { return color(d.species); });
   }
 
   var brushCell;
 
+  // Clear the previously-active brush, if any.
   function brushstart(p) {
     if (brushCell !== this) {
       d3.select(brushCell).call(brush.move, null);
@@ -159,6 +160,7 @@ d3.csv("airline.csv", function(error, data) {
     }
   }
 
+  // Highlight the selected circles.
   function brushmove(p) {
     var e = d3.brushSelection(this);
     svg.selectAll("circle").classed("hidden", function(d) {
@@ -171,6 +173,7 @@ d3.csv("airline.csv", function(error, data) {
     });
   }
 
+  // If the brush is empty, select all circles.
   function brushend() {
     var e = d3.brushSelection(this);
     if (e === null) svg.selectAll(".hidden").classed("hidden", false);
